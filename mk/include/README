@@ -1,3 +1,0 @@
-
-Files in this directory are not to be included directly in Makefiles.
-The files are included by the ../*.mk files.
