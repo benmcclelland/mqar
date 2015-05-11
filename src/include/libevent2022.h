@@ -35,9 +35,6 @@
 
 typedef event_callback_fn mqar_event_cbfunc_t;
 
-
-BEGIN_C_DECLS
-
 /* set the number of event priority levels */
 #define MQAR_EVENT_NUM_PRI   8
 
@@ -137,7 +134,5 @@ mqar_event_t* mqar_event_alloc(void);
 #define mqar_event_get_signal(x) event_get_signal((x))
 
 #define mqar_event_loop(b, fg) event_base_loop((b), (fg))
-
-END_C_DECLS
 
 #endif /* MCA_OPAL_EVENT_LIBEVENT2022_H */

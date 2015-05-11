@@ -13,13 +13,14 @@ LIB_HOME = ../src/lib
 include $(DEPTH)/mk/common.mk
 
 INCS += -I. -I$(DEPTH)/src/include
+DEPCFLAGS = $(OSFLAGS) $(INCS)
 
 LIB = mqar
 LIB_SRC = \
+    progress_threads.c
 
 LIB_LIBS +=  \
-    $(STATIC_OPT) -levent2 \
-    $(DYNAMIC_OPT) -larchive $(LIBSO_OPT)
+    $(DYNAMIC_OPT) -levent -larchive $(LIBSO_OPT)
 
 DEPCFLAGS += $(THRCOMP)
 
