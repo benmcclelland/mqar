@@ -1,4 +1,4 @@
-/*
+/* Open-MPI
  * Copyright (c) 2014      Intel, Inc.  All rights reserved. 
  * $COPYRIGHT$
  * 
