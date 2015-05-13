@@ -17,6 +17,7 @@ DEPCFLAGS = $(OSFLAGS) $(INCS)
 
 LIB = mqar
 LIB_SRC = \
+    diskarchive.c \
     progress_threads.c
 
 LIB_LIBS +=  \
