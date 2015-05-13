@@ -50,8 +50,10 @@ static void mqar_progress_tracker_construct(mqar_progress_tracker_t *p)
     p->pipe[1] = -1;
 }
 
-static void mqar_progress_tracker_destruct(mqar_progress_tracker_t *p)
+static void mqar_progress_tracker_destruct(void *data)
 {
+    mqar_progress_tracker_t *p = (mqar_progress_tracker_t *)data;
+    
     if (NULL != p->name) {
         free(p->name);
     }
@@ -70,7 +72,7 @@ static void mqar_progress_tracker_destruct(mqar_progress_tracker_t *p)
     free(p);
 }
 
-static zlist_t *tracking;
+static zhash_t *tracking;
 static bool inited = false;
 
 static void wakeup(int fd, short args, void *cbdata)
@@ -181,11 +183,11 @@ mqar_event_base_t *mqar_start_progress_thread(char *name,
         return NULL;
     }
     if (!inited) {
-        tracking = zlist_new();
+        tracking = zhash_new();
         inited = true;
     }
-    zlist_append(tracking, (void *)trk);
-    zlist_freefn((void *)trk, mqar_progress_tracker_destruct, 1);
+    zhash_insert(tracking, (void *)trk, name);
+    zhash_freefn(tracking, name, mqar_progress_tracker_destruct);
     return trk->ev_base;
 }
 
@@ -200,38 +202,37 @@ void mqar_stop_progress_thread(char *name, bool cleanup)
     }
 
     /* find the specified engine */
-    trk = (mqar_progress_tracker_t *)zlist_first(tracking);
+    trk = (mqar_progress_tracker_t *)zhash_lookup(tracking, name);
 
-    while (trk) {
-        if (0 == strcmp(name, trk->name)) {
-            /* if it is already inactive, then just cleanup if that
-             * is the request */
-            if (!trk->ev_active) {
-                if (cleanup) {
-                    zlist_remove(tracking, trk);
-                }
-                return;
-            }
-            /* mark it as inactive */
-            trk->ev_active = false;
-            /* break the event loop - this will cause the loop to exit
-             * upon completion of any current event */
-            mqar_event_base_loopbreak(trk->ev_base);
-            /* if present, use the block to break it loose just in
-             * case the thread is blocked in a call to select for
-             * a long time */
-            if (trk->block_active) {
-                i=1;
-                write(trk->pipe[1], &i, sizeof(int));
-            }
-            /* wait for thread to exit */
-            mqar_thread_join(&trk->engine, NULL);
-            /* cleanup, if they indicated they are done with this event base */
+    if (NULL != trk) {
+        /* if it is already inactive, then just cleanup if that
+         * is the request */
+        if (!trk->ev_active) {
             if (cleanup) {
-                zlist_remove(tracking, trk);
+                zhash_delete(tracking, name);
             }
             return;
         }
-        trk = (mqar_progress_tracker_t *)zlist_next(tracking);
+        /* mark it as inactive */
+        trk->ev_active = false;
+        /* break the event loop - this will cause the loop to exit
+         * upon completion of any current event */
+        mqar_event_base_loopbreak(trk->ev_base);
+        /* if present, use the block to break it loose just in
+         * case the thread is blocked in a call to select for
+         * a long time */
+        if (trk->block_active) {
+            i=1;
+            write(trk->pipe[1], &i, sizeof(int));
+        }
+        /* wait for thread to exit */
+        mqar_thread_join(&trk->engine, NULL);
+        /* cleanup, if they indicated they are done with this event base */
+        if (cleanup) {
+            zhash_delete(tracking, name);
+        }
+        return;
     }
 }
+
+/* TODO: Cleanup all progress threads */
