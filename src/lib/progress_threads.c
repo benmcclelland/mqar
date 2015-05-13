@@ -145,7 +145,7 @@ mqar_event_base_t *mqar_start_progress_thread(char *name,
     }
     mqar_progress_tracker_construct(trk);
     trk->name = strdup(name);
-    if (NULL == (trk->ev_base = mqar_event_base_create())) {
+    if (NULL == (trk->ev_base = event_base_new())) {
         zclock_log("E: progress tracker unable to create event: ");
         free(trk);
         return NULL;
