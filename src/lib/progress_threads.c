@@ -21,7 +21,8 @@ struct mqar_thread_t {
     pthread_t t_handle;
 };
 
-static void mqar_thread_construct(mqar_thread_t *t)
+static void
+mqar_thread_construct(mqar_thread_t *t)
 {
     t->t_run = 0;
     t->t_handle = (pthread_t) -1;
@@ -39,7 +40,8 @@ typedef struct {
     int pipe[2];
 } mqar_progress_tracker_t;
 
-static void mqar_progress_tracker_construct(mqar_progress_tracker_t *p)
+static void
+mqar_progress_tracker_construct(mqar_progress_tracker_t *p)
 {
     p->name = NULL;
     p->ev_base = NULL;
@@ -50,7 +52,8 @@ static void mqar_progress_tracker_construct(mqar_progress_tracker_t *p)
     p->pipe[1] = -1;
 }
 
-static void mqar_progress_tracker_destruct(void *data)
+static void
+mqar_progress_tracker_destruct(void *data)
 {
     mqar_progress_tracker_t *p = (mqar_progress_tracker_t *)data;
     
@@ -75,7 +78,8 @@ static void mqar_progress_tracker_destruct(void *data)
 static zhash_t *tracking;
 static bool inited = false;
 
-static void wakeup(int fd, short args, void *cbdata)
+static void
+wakeup(int fd, short args, void *cbdata)
 {
     mqar_progress_tracker_t *trk = (mqar_progress_tracker_t*)cbdata;
 
@@ -85,7 +89,8 @@ static void wakeup(int fd, short args, void *cbdata)
     trk->block_active = false;
 }
 
-static void progress_engine(mqar_thread_t *t)
+static void
+progress_engine(mqar_thread_t *t)
 {
     mqar_progress_tracker_t *trk = (mqar_progress_tracker_t*)t->t_arg;
 
@@ -95,7 +100,8 @@ static void progress_engine(mqar_thread_t *t)
     return;
 }
 
-static int mqar_thread_start(mqar_thread_t *t)
+static int
+mqar_thread_start(mqar_thread_t *t)
 {
     int rc;
     
@@ -109,14 +115,16 @@ static int mqar_thread_start(mqar_thread_t *t)
     return (rc == 0) ? MQAR_SUCCESS : MQAR_ERROR;
 }
 
-static int mqar_thread_join(mqar_thread_t *t, void **thr_return)
+static int
+mqar_thread_join(mqar_thread_t *t, void **thr_return)
 {
     int rc = pthread_join(t->t_handle, thr_return);
     t->t_handle = (pthread_t) -1;
     return (rc == 0) ? MQAR_SUCCESS : MQAR_ERROR;
 }
 
-int mqar_fd_set_cloexec(int fd)
+static int
+mqar_fd_set_cloexec(int fd)
 {
     int flags;
     
@@ -132,8 +140,8 @@ int mqar_fd_set_cloexec(int fd)
     return MQAR_SUCCESS;
 }
 
-mqar_event_base_t *mqar_start_progress_thread(char *name,
-                                              bool create_block)
+mqar_event_base_t *
+mqar_start_progress_thread(char *name, bool create_block)
 {
     mqar_progress_tracker_t *trk;
     int rc;
@@ -166,7 +174,8 @@ mqar_event_base_t *mqar_start_progress_thread(char *name,
             free(trk);
             return NULL;
         }
-        mqar_event_set(trk->ev_base, &trk->block, trk->pipe[0], MQAR_EV_READ, wakeup, trk);
+        mqar_event_set(trk->ev_base, &trk->block, trk->pipe[0],
+                       MQAR_EV_READ, wakeup, trk);
         mqar_event_add(&trk->block, 0);
         trk->block_active = true;
     }
@@ -191,7 +200,8 @@ mqar_event_base_t *mqar_start_progress_thread(char *name,
     return trk->ev_base;
 }
 
-void mqar_stop_progress_thread(char *name, bool cleanup)
+void
+mqar_stop_progress_thread(char *name, bool cleanup)
 {
     mqar_progress_tracker_t *trk;
     int i;

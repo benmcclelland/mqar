@@ -1,7 +1,8 @@
 #include "mdp_common.h"
 #include "mdp_client.h"
 
-int main (int argc, char *argv [])
+int
+main (int argc, char *argv [])
 {
     int verbose = (argc > 1 && streq (argv [1], "-v"));
     mdp_client_t *client = mdp_client_new("tcp://localhost:12345", verbose);

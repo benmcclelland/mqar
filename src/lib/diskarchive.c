@@ -45,7 +45,8 @@ diskarchive_write_file(archive_handle_t *handle, const char **filelist)
         
         ret = archive_read_disk_open(disk, *filelist);
         if (ret != ARCHIVE_OK) {
-            zclock_log("E: write file open source failed %s: ", archive_error_string(disk));
+            zclock_log("E: write file open source failed %s: ",
+                       archive_error_string(disk));
             archive_read_free(disk);
             return(MQAR_ERROR);
         }
@@ -57,13 +58,15 @@ diskarchive_write_file(archive_handle_t *handle, const char **filelist)
                 archive_entry_free(entry);
                 break;
             if (ret != ARCHIVE_OK) {
-                zclock_log("E: write file read next header failed %s: ", archive_error_string(disk));
+                zclock_log("E: write file read next header failed %s: ",
+                           archive_error_string(disk));
                 goto error;
             }
             archive_read_disk_descend(disk);
             ret = archive_write_header(handle->a, entry);
             if (ret < ARCHIVE_OK || ret == ARCHIVE_FATAL) {
-                zclock_log("E: write file write header failed %s: ", archive_error_string(disk));
+                zclock_log("E: write file write header failed %s: ",
+                           archive_error_string(disk));
                 goto error;
             }
             if (ret > ARCHIVE_FAILED) {

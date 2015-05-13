@@ -15,14 +15,13 @@
  * will also create a pipe so that libevent has something to block
  * against, thus keeping the thread from free-running
  */
-mqar_event_base_t *mqar_start_progress_thread(char *name, bool create_block);
+mqar_event_base_t *
+mqar_start_progress_thread(char *name, bool create_block);
 
 /* stop the progress thread of the provided name. This function will
  * also cleanup the blocking pipes and release the event base if
  * the cleanup param is true */
-void mqar_stop_progress_thread(char *name, bool cleanup);
-
-/* restart the progress thread of the provided name */
-int mqar_restart_progress_thread(char *name);
+void
+mqar_stop_progress_thread(char *name, bool cleanup);
 
 #endif

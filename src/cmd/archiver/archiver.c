@@ -167,7 +167,8 @@ archive_handle_request(archiver_t *self, zmsg_t *request, zframe_t *reply_to)
     zmsg_destroy(&request);
 }
 
-int main(int argc, char *argv [])
+int
+main(int argc, char *argv [])
 {
     int verbose = (argc > 1 && streq(argv [1], "-v"));
     archive_state_t *archive_state, *stage_state, *item;
