@@ -204,9 +204,12 @@ main(int argc, char *argv [])
     while (item) {
         mqar_stop_progress_thread(item->operation, true);
         zhash_delete(ev_bases, item->operation);
+        free(item->operation);
         item = (archive_state_t *)zlist_next(keys);
     }
     archiver_destroy(&archiver);
+    zlist_destroy(&keys);
+    zhash_destroy(&ev_bases);
 
     return 0;
 }
