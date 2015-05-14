@@ -573,8 +573,8 @@ int main (int argc, char *argv [])
     else
     {
         /* default */
-        s_broker_bind (self, "tcp://*:5555");
-        printf("Bound to tcp://*:5555\n");
+        s_broker_bind (self, "tcp://*:12345");
+        printf("Bound to tcp://*:12345\n");
     }
 
     //  Get and process messages forever or until interrupted
