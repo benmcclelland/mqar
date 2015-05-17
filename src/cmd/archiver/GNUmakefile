@@ -18,7 +18,7 @@ DEPCFLAGS = $(OSFLAGS) $(INCS)
 
 PROG_LIBS = \
     $(STATIC_OPT) -L../../lib/$(OBJ_DIR) -lmdp -lmqar \
-    $(DYNAMIC_OPT) -L $(DEPTH)/lib64 -lzmq -lczmq -levent -larchive $(LIBSO_OPT)
+    $(DYNAMIC_OPT) -L $(DEPTH)/lib64 -lzmq -lczmq -levent_pthreads -levent -larchive $(LIBSO_OPT)
 install: all
 
 include $(DEPTH)/mk/targets.mk

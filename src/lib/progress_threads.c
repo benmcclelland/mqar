@@ -140,12 +140,21 @@ mqar_fd_set_cloexec(int fd)
     return MQAR_SUCCESS;
 }
 
+int
+mqar_init_progress_threads()
+{
+    evthread_use_pthreads();
+
+    return MQAR_SUCCESS;
+}
+
 mqar_event_base_t *
 mqar_start_progress_thread(char *name, bool create_block)
 {
     mqar_progress_tracker_t *trk;
     int rc;
-
+    struct event_config *config=NULL;
+    
     trk = (mqar_progress_tracker_t *)malloc(sizeof(mqar_progress_tracker_t));
     if (NULL == trk) {
         zclock_log("E: progress tracker unable to malloc: ");
@@ -153,11 +162,20 @@ mqar_start_progress_thread(char *name, bool create_block)
     }
     mqar_progress_tracker_construct(trk);
     trk->name = strdup(name);
-    if (NULL == (trk->ev_base = event_base_new())) {
+    zclock_log("I: creating progress thread: %s", name);
+    
+    /* event setup */
+    config = event_config_new();
+    event_config_avoid_method(config, "select");
+
+    if (NULL == (trk->ev_base = event_base_new_with_config(config))) {
         zclock_log("E: progress tracker unable to create event: ");
+        event_config_free(config);
         free(trk);
         return NULL;
     }
+    
+    event_config_free(config);
 
     if (create_block) {
         /* add an event it can block on */
@@ -195,7 +213,7 @@ mqar_start_progress_thread(char *name, bool create_block)
         tracking = zhash_new();
         inited = true;
     }
-    zhash_insert(tracking, (void *)trk, name);
+    zhash_insert(tracking, name, (void *)trk);
     zhash_freefn(tracking, name, mqar_progress_tracker_destruct);
     return trk->ev_base;
 }
@@ -211,6 +229,7 @@ mqar_stop_progress_thread(char *name, bool cleanup)
         return;
     }
 
+    zclock_log("I: stopping progress thread: %s", name);
     /* find the specified engine */
     trk = (mqar_progress_tracker_t *)zhash_lookup(tracking, name);
 

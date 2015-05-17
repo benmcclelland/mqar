@@ -24,4 +24,7 @@ mqar_start_progress_thread(char *name, bool create_block);
 void
 mqar_stop_progress_thread(char *name, bool cleanup);
 
+int
+mqar_init_progress_threads();
+
 #endif
