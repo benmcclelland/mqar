@@ -10,7 +10,7 @@ DEPTH = ..
 
 include $(DEPTH)/mk/common.mk
 
-DIRS = lib cmd
+DIRS = interface cmd
 
 include $(DEPTH)/mk/targets.mk
 include $(DEPTH)/mk/depend.mk
