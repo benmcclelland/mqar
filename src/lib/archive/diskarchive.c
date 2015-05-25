@@ -10,22 +10,39 @@
 #include <unistd.h>
 
 #include "mqar.h"
+#include "mqar_archive.h"
 
 #define RD_BLK_SZ 8192
 #define BUFF_SZ 524288
 
-struct archive_handle_t {
-    struct archive *a;
-    char *filename;
-    char *buf;
-};
-typedef struct archive_handle_t archive_handle_t;
+static int diskarchive_write_init(archive_handle_t *handle);
+static int diskarchive_write_file(archive_handle_t *handle, fileinfo_t *filelist);
+static void diskarchive_write_finalize(archive_handle_t *handle);
+static int diskarchive_read_init(archive_handle_t *handle, inode_t inode, int64_t offset);
+static int diskarchive_read_file(archive_handle_t *handle);
+static void diskarchive_read_finalize(archive_handle_t *handle);
 
-struct fileinfo_t {
-    char *filename;
-    int64_t arch_offset;
-};
-typedef struct fileinfo_t fileinfo_t;
+archive_module_t * init()
+{
+    archive_module_t *module;
+    
+    module = (archive_module_t *)malloc(sizeof(archive_module_t));
+    module->name = strdup("diskarchive");
+    module->write_init = diskarchive_write_init;
+    module->write_file = diskarchive_write_file;
+    module->write_finalize = diskarchive_write_finalize;
+    module->read_init = diskarchive_read_init;
+    module->read_file = diskarchive_read_file;
+    module->read_finalize = diskarchive_read_finalize;
+    
+    return module;
+}
+
+void finalize(archive_module_t *module)
+{
+    free(module->name);
+    free(module);
+}
 
 static int64_t
 round_up(int64_t input, int multiple)
@@ -44,8 +61,14 @@ round_up(int64_t input, int multiple)
     return input + multiple - remainder;
 }
 
+static char *get_next_file_name()
+{
+    char *filename = strdup("/tmp/testfile");
+    return filename;
+}
+
 static int
-diskarchive_write_init(archive_handle_t *handle, char *archfile)
+diskarchive_write_init(archive_handle_t *handle)
 {
     handle = (archive_handle_t *)malloc(sizeof(archive_handle_t));
     handle->buf = (char *)malloc(BUFF_SZ * sizeof(char));
@@ -54,7 +77,7 @@ diskarchive_write_init(archive_handle_t *handle, char *archfile)
     archive_write_add_filter_none(handle->a);
     archive_write_set_format_pax_restricted(handle->a);
     
-    handle->filename = strdup(archfile);
+    handle->filename = get_next_file_name();
     if (archive_write_open_filename(handle->a, handle->filename)) {
         zclock_log("E: archive_write_open_filename() %s\n",
                    archive_error_string(handle->a));
@@ -136,7 +159,7 @@ diskarchive_write_finalize(archive_handle_t *handle)
 }
 
 static int
-diskarchive_read_init(archive_handle_t *handle, char *archfile, int64_t offset)
+diskarchive_read_init(archive_handle_t *handle, inode_t inode, int64_t offset)
 {
     int fd;
     off_t seek_offset;
@@ -153,7 +176,8 @@ diskarchive_read_init(archive_handle_t *handle, char *archfile, int64_t offset)
     archive_read_support_format_all(handle->a);
     archive_read_support_filter_none(handle->a);
     
-    handle->filename = strdup(archfile);
+    // will be stat file && get filename
+    handle->filename = get_next_file_name();
     fd = open(handle->filename, O_RDONLY);
     if (-1 == fd) {
         zclock_log("E: couldn't open archive file: %s",

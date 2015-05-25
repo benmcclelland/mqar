@@ -6,23 +6,21 @@
 #
 #    VSM_notice_end
 
-DEPTH = ../..
+DEPTH = ../../..
 
 LIB_HOME = ../src/lib
 
 include $(DEPTH)/mk/common.mk
 
-DIRS = archive csum
-
 INCS += -I. -I$(DEPTH)/src/include
 DEPCFLAGS = $(OSFLAGS) $(INCS)
 
-LIB = mqar
+LIB = mqar_archive
 LIB_SRC = \
-    progress_threads.c
+    diskarchive.c
 
 LIB_LIBS +=  \
-    $(DYNAMIC_OPT) -levent $(LIBSO_OPT)
+    $(DYNAMIC_OPT) -larchive $(LIBSO_OPT)
 
 DEPCFLAGS += $(THRCOMP)
 
