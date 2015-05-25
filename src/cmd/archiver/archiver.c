@@ -162,11 +162,7 @@ archiver_handle_test_request(int fd, short args, void* cbdata)
     sleep(30);
     fprintf(stderr, "sending response back\n");
     zframe_destroy(&caddy->data);
-    
-    // init archivefile
-    // seek archivefile
-    // stage file
-    
+
     request_t *request = request_new(self->worker, caddy->reply_to);
     send_request_status(request, 0, caddy->operation);
     request_destroy(&request);
