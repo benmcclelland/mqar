@@ -15,14 +15,15 @@ include $(DEPTH)/mk/common.mk
 INCS += -I. -I$(DEPTH)/src/include
 DEPCFLAGS = $(OSFLAGS) $(INCS)
 
-LIB = mqar_archive
-LIB_SRC = \
+MLIBS = mqar_archive_disk
+mqar_archive_disk_SRC = \
     diskarchive.c
 
-LIB_LIBS +=  \
+mqar_archive_disk_LIBS +=  \
     $(DYNAMIC_OPT) -larchive $(LIBSO_OPT)
 
 DEPCFLAGS += $(THRCOMP)
 
 include $(DEPTH)/mk/targets.mk
+include $(DEPTH)/mk/multilib.mk
 include $(DEPTH)/mk/depend.mk

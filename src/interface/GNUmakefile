@@ -10,7 +10,7 @@ DEPTH = ../..
 
 include $(DEPTH)/mk/common.mk
 
-DIRS = archive csum
+DIRS = archive csum config errhandler
 
 include $(DEPTH)/mk/targets.mk
 include $(DEPTH)/mk/depend.mk

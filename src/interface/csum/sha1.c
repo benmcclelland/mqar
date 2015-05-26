@@ -7,10 +7,8 @@ static int mqar_sha1_update(void *handle, const void *data, ssize_t len);
 static int mqar_sha1_final(unsigned char *sum, void *handle);
 static int mqar_digest_size_sha1(void);
 
-csum_module_t * init()
+int init(csum_module_t *module)
 {
-    csum_module_t *module;
-    
     module = (csum_module_t *)malloc(sizeof(csum_module_t));
     module->name = strdup("sha1");
     module->init = mqar_sha1_init;
@@ -18,7 +16,7 @@ csum_module_t * init()
     module->final = mqar_sha1_final;
     module->size = mqar_digest_size_sha1;
     
-    return module;
+    return MQAR_SUCCESS;
 }
 
 void finalize(csum_module_t *module)

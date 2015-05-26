@@ -15,12 +15,11 @@ include $(DEPTH)/mk/common.mk
 INCS += -I. -I$(DEPTH)/src/include
 DEPCFLAGS = $(OSFLAGS) $(INCS)
 
-MLIBS = mqar_csum_sha1
-mqar_csum_sha1_SRC = \
-    sha1.c
+MLIBS = mqar_err_default
+mqar_err_default_SRC = \
+    defaulterr.c
 
-mqar_csum_sha1_LIBS +=  \
-    $(DYNAMIC_OPT) -lcrypto $(LIBSO_OPT)
+mqar_err_default_LIBS +=
 
 DEPCFLAGS += $(THRCOMP)
 
