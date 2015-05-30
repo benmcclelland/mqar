@@ -49,5 +49,5 @@ mqar_sha1_final(unsigned char *sum, void *handle)
 static int
 mqar_digest_size_sha1()
 {
-    return 20;
+    return SHA_DIGEST_LENGTH;
 }
