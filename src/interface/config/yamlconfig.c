@@ -101,5 +101,5 @@ yaml_parse_config(void)
     
     yaml_parser_delete(&parser);
     fclose(fh);
-    return 0;
+    return MQAR_SUCCESS;
 }
