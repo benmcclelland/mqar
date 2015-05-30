@@ -20,14 +20,14 @@ find_plugin(char *interface)
     filematch = strdup("mqar_archive_");
     
     if (!envname) {
-        dirname = strdup("/usr/lib64/mqar/plugin");
+        dirname = strdup("/usr/lib64/mqar_plugin");
     } else {
         dirname = strdup(envname);
     }
     
     dir = opendir(dirname);
     
-    while ((dp=readdir(dir)) != NULL) {
+    while (NULL != (dp = readdir(dir))) {
         printf("debug: %s\n", dp->d_name);
         if (0 == strncmp(dp->d_name, filematch, sizeof(filematch))) {
             printf("found match: \"%s\"\n", dp->d_name);
