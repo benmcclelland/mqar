@@ -1,11 +1,16 @@
 #ifndef MQAR_ERROR_H
 #define MQAR_ERROR_H
 
-typedef int (*mqar_err_handle_cbfunc_t)(int);
+#include "plugin_loader.h"
+
+typedef int (*mqar_err_handle_func_t)(int);
 
 struct error_module_t {
     char *name;
-    mqar_err_handle_cbfunc_t handle_err;
+	int priority;
+	mqar_module_select_func_t select;
+	mqar_module_finalize_func_t finalize;
+    mqar_err_handle_func_t handle_err;
 };
 typedef struct error_module_t error_module_t;
 

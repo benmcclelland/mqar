@@ -3,6 +3,8 @@
 #include "mqar.h"
 #include "mqar_config.h"
 
+static int yamlconfig_select(mqar_module_t *imod);
+static void yamlconfig_finalize(mqar_module_t *imod);
 static int yaml_parse_config(void);
 
 int init(config_module_t *module)
@@ -22,6 +24,9 @@ int init(config_module_t *module)
     if (-1 != access(fname, F_OK)) {
         module = (config_module_t *)malloc(sizeof(config_module_t));
         module->name = strdup("yaml");
+		module->priority = 10;
+		module->select = yamlconfig_select;
+		module->finalize = yamlconfig_finalize;
         module->parse = yaml_parse_config;
 
         free(fname);
@@ -30,6 +35,19 @@ int init(config_module_t *module)
         free(fname);
         return MQAR_ERROR;
     }
+}
+
+static int
+yamlconfig_select(mqar_module_t *imod)
+{
+}
+
+static void
+yamlconfig_finalize(mqar_module_t *imod)
+{
+	config_module_t *module = (config_module_t *)imod;
+	free(module->name);
+	free(module);
 }
 
 static int

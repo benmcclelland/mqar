@@ -15,6 +15,8 @@
 #define RD_BLK_SZ 8192
 #define BUFF_SZ 524288
 
+static int diskarchive_select(mqar_module_t *imod);
+static void diskarchive_finalize(mqar_module_t *imod);
 static int diskarchive_write_init(archive_handle_t *handle);
 static int diskarchive_write_file(archive_handle_t *handle, fileinfo_t *filelist);
 static void diskarchive_write_finalize(archive_handle_t *handle);
@@ -28,6 +30,9 @@ archive_module_t * init()
     
     module = (archive_module_t *)malloc(sizeof(archive_module_t));
     module->name = strdup("diskarchive");
+	module->priority = 10;
+	module->select = diskarchive_select;
+	module->finalize = diskarchive_finalize;
     module->write_init = diskarchive_write_init;
     module->write_file = diskarchive_write_file;
     module->write_finalize = diskarchive_write_finalize;
@@ -38,10 +43,17 @@ archive_module_t * init()
     return module;
 }
 
-void finalize(archive_module_t *module)
+static int
+diskarchive_select(mqar_module_t *module)
 {
-    free(module->name);
-    free(module);
+}
+
+static void
+diskarchive_finalize(mqar_module_t *imod)
+{
+	archive_module_t *module = (archive_module_t *)imod;
+	free(module->name);
+	free(module);
 }
 
 static int64_t

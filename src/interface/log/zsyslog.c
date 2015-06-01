@@ -3,6 +3,8 @@
 #include "mqar.h"
 #include "mqar_log.h"
 
+static int zsyslog_select(mqar_module_t *imod);
+static void zsyslog_finalize(mqar_module_t *imod);
 static int mqar_zsys_log(int level, const char *format, ...);
 
 int init(log_module_t *module)
@@ -15,9 +17,23 @@ int init(log_module_t *module)
     
     module = (log_module_t *)malloc(sizeof(log_module_t));
     module->name = strdup("zsys");
+	module->priority = 10;
+	module->select = zsyslog_select;
+	module->finalize = zsyslog_finalize;
     module->log = mqar_zsys_log;
     
     return MQAR_SUCCESS;
+}
+
+static int zsyslog_select(mqar_module_t *imod)
+{
+}
+
+static void zsyslog_finalize(mqar_module_t *imod)
+{
+	log_module_t *module = (log_module_t *)imod;
+	free(module->name);
+	free(module);
 }
 
 static int
