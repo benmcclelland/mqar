@@ -13,9 +13,9 @@ int init(csum_module_t *module)
 {
     module = (csum_module_t *)malloc(sizeof(csum_module_t));
     module->name = strdup("sha1");
-	module->priority = 10;
-	module->select = sha1_select;
-	module->finalize = sha1_finalize;
+    module->priority = 10;
+    module->select = sha1_select;
+    module->finalize = sha1_finalize;
     module->init = mqar_sha1_init;
     module->update = mqar_sha1_update;
     module->final = mqar_sha1_final;
@@ -32,7 +32,7 @@ sha1_select(mqar_module_t *imod)
 static void
 sha1_finalize(mqar_module_t *imod)
 {
-	csum_module_t *module = (csum_module_t *)imod;
+    csum_module_t *module = (csum_module_t *)imod;
     free(module->name);
     free(module);
 }

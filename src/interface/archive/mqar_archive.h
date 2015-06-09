@@ -30,9 +30,9 @@ typedef void (*mqar_archive_read_finalize_func_t)(archive_handle_t *handle);
 
 struct archive_module_t {
     char *name;
-	int priority;
-	mqar_module_select_func_t select;
-	mqar_module_finalize_func_t finalize;
+    int priority;
+    mqar_module_select_func_t select;
+    mqar_module_finalize_func_t finalize;
     mqar_archive_write_init_func_t write_init;
     mqar_archive_write_file_func_t write_file;
     mqar_archive_write_finalize_func_t write_finalize;

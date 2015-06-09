@@ -30,9 +30,9 @@ archive_module_t * init()
     
     module = (archive_module_t *)malloc(sizeof(archive_module_t));
     module->name = strdup("diskarchive");
-	module->priority = 10;
-	module->select = diskarchive_select;
-	module->finalize = diskarchive_finalize;
+    module->priority = 10;
+    module->select = diskarchive_select;
+    module->finalize = diskarchive_finalize;
     module->write_init = diskarchive_write_init;
     module->write_file = diskarchive_write_file;
     module->write_finalize = diskarchive_write_finalize;
@@ -51,9 +51,9 @@ diskarchive_select(mqar_module_t *module)
 static void
 diskarchive_finalize(mqar_module_t *imod)
 {
-	archive_module_t *module = (archive_module_t *)imod;
-	free(module->name);
-	free(module);
+    archive_module_t *module = (archive_module_t *)imod;
+    free(module->name);
+    free(module);
 }
 
 static int64_t
